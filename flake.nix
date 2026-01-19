@@ -7,11 +7,21 @@
 
   outputs =
     { self, nixpkgs }:
+
+    let
+      system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
+    in
     {
+      devShells.${system}.default = pkgs.mkShell {
+        buildInputs = with pkgs; [
+          ghc
+          cabal2nix
+        ];
 
-      packages.x86_64-linux.hello = nixpkgs.legacyPackages.x86_64-linux.hello;
-
-      packages.x86_64-linux.default = self.packages.x86_64-linux.hello;
-
+        shellHook = ''
+          echo "spotify.hs dev shell"
+        '';
+      };
     };
 }
