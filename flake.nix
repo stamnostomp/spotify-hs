@@ -16,13 +16,24 @@
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+        spotifyHSPkg = pkgs.haskellPackages.callPackage ./default.nix { };
       in
       {
-        devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            ghc
-            cabal2nix
-          ];
+        packages.default = spotifyHSPkg;
+
+        devShells.default = pkgs.haskellPackages.shellFor {
+          packages = p: [ spotifyHSPkg ];
+          buildInputs =
+            with pkgs.haskellPackages;
+            [
+              cabal-install
+              brick
+              vty
+            ]
+            ++ (with pkgs; [
+              ghc
+              cabal2nix
+            ]);
         };
       }
     );
